@@ -25,5 +25,14 @@ def create_room():
     print(f'Room "{name}" created with ID {room.id}')
 
 def update_room():
-    pass
+    room_id = int(input('Enter room ID to update: '))
+    
+    room = session.get(Room, room_id)
+    if not room:
+        print(f"Room with ID {room_id} does not exist.")
+        return
+    
+    room.name = input(f"Enter new name for Room (current: {room.name}): ") or room.name
+    session.commit()
+    print(f"Room with ID {room_id} updated successfully.")
 
