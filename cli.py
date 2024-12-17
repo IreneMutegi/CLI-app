@@ -36,3 +36,18 @@ def update_room():
     session.commit()
     print(f"Room with ID {room_id} updated successfully.")
 
+def delete_room():
+   room_id = int(input('Enter room ID to update: '))
+   room = session.get(Room, room_id)
+   if not room:
+        print(f"Room with ID {room_id} does not exist.")
+        return
+
+   session.delete(room)
+   session.commit()
+   print(f"Room with ID {room_id}  successfully.")
+
+
+
+   def 
+
