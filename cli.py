@@ -5,14 +5,13 @@ from models import Base, Room, Guest, Amenity
 
 DATABASE_URL = "sqlite:///guests.db"
 
-engine = create_engine (DATABASE_URL)
-Session = sessionmaker (bind=engine)
+engine = create_engine(DATABASE_URL)
+Session = sessionmaker(bind=engine)
 session = Session()
 
 def init_db():
     Base.metadata.create_all(engine)
     print("Database Initialized")
-
 
 def create_room():
     name = input("Enter Room Name: ")
@@ -37,15 +36,15 @@ def update_room():
     print(f"Room with ID {room_id} updated successfully.")
 
 def delete_room():
-   room_id = int(input('Enter room ID to update: '))
-   room = session.get(Room, room_id)
-   if not room:
+    room_id = int(input('Enter room ID to update: '))
+    room = session.get(Room, room_id)
+    if not room:
         print(f"Room with ID {room_id} does not exist.")
         return
 
-   session.delete(room)
-   session.commit()
-   print(f"Room with ID {room_id}  successfully.")
+    session.delete(room)
+    session.commit()
+    print(f"Room with ID {room_id} deleted successfully.")
 
 def create_guest():
     name = input("Enter guest name: ")
@@ -67,9 +66,6 @@ def create_guest():
     session.commit()
     
     print(f"Guest '{name}' created with ID {guest.id}.")
-
-
-
 
 def update_guest():
     guest_id = int(input('Enter guest ID to update: '))
@@ -158,8 +154,6 @@ def assign_guest():
     session.commit()
     print(f"Guest '{guest.name}' assigned to Room '{room.name}' with Amenity '{amenity.name}'.")
 
-
-
 def list_rooms():
     rooms = session.query(Room).all()
 
@@ -182,8 +176,6 @@ def list_amenities():
     for amenity in amenities:
         print(f"Amenity ID: {amenity.id}, Name: {amenity.name}")
 
-
-
 def list_guests():
     guests = session.query(Guest).all()
 
@@ -194,7 +186,6 @@ def list_guests():
     print("Guests List:")
     for guest in guests:
         print(f"Guest ID: {guest.id}, Name: {guest.name}, Email: {guest.email}, Phone: {guest.phone_number}")
-
 
 def view_guests_by_room():
     room_id = int(input('Enter Room ID to view guests: '))
@@ -234,64 +225,68 @@ def view_guests_by_amenity():
     for guest in guests:
         print(f"Guest ID: {guest.id}, Name: {guest.name}, Email: {guest.email}, Phone: {guest.phone_number}")
 
+# Main menu function should be defined outside any other function
+def main_menu():
+    while True:
+        print("\nWelcome to Luxury Hotel Management System")
+        print("1. Initialize Database")
+        print("2. Create Room")
+        print("3. Update Room")
+        print("4. Delete Room")
+        print("5. Create Guest")
+        print("6. Update Guest")
+        print("7. Delete Guest")
+        print("8. Create Amenity")
+        print("9. Update Amenity")
+        print("10. Delete Amenity")
+        print("11. Assign Guest to Room and Amenity")
+        print("12. List Rooms")
+        print("13. List Amenities")
+        print("14. List Guests")
+        print("15. View Guests by Room")
+        print("16. View Guests by Amenity")
+        print("17. Exit")
+        
+        choice = input("Choose an option: ")
+        
+        if choice == '1':
+            init_db()
+        elif choice == '2':
+            create_room()
+        elif choice == '3':
+            update_room()
+        elif choice == '4':
+            delete_room()
+        elif choice == '5':
+            create_guest()
+        elif choice == '6':
+            update_guest()
+        elif choice == '7':
+            delete_guest()
+        elif choice == '8':
+            create_amenity()
+        elif choice == '9':
+            update_amenity()
+        elif choice == '10':
+            delete_amenity()
+        elif choice == '11':
+            assign_guest()
+        elif choice == '12':
+            list_rooms()
+        elif choice == '13':
+            list_amenities()
+        elif choice == '14':
+            list_guests()
+        elif choice == '15':
+            view_guests_by_room()
+        elif choice == '16':
+            view_guests_by_amenity()
+        elif choice == '17':
+            print("Exiting...")
+            sys.exit()
+        else:
+            print("Invalid option, please try again.")
 
-    def main_menu():
-        while True:
-            print("\nWelcome to Luxury Hotel Management System")
-            print("1. Initialize Database")
-            print("2. Create Room")
-            print("3. Update Room")
-            print("4. Delete Room")
-            print("5. Create Guest")
-            print("6. Update Guest")
-            print("7. Delete Guest")
-            print("8. Create Amenity")
-            print("9. Update Amenity")
-            print("10. Delete Amenity")
-            print("11. Assign Guest to Room and Amenity")
-            print("12. List Rooms")
-            print("13. List Amenities")
-            print("14. List Guests")
-            print("15. View Guests by Room")
-            print("16. View Guests by Amenity")
-            print("17. Exit")
-            
-            choice = input("Choose an option: ")
-            
-            if choice == '1':
-                init_db()
-            elif choice == '2':
-                create_room()
-            elif choice == '3':
-                update_room()
-            elif choice == '4':
-                delete_room()
-            elif choice == '5':
-                create_guest()
-            elif choice == '6':
-                update_guest()
-            elif choice == '7':
-                delete_guest()
-            elif choice == '8':
-                create_amenity()
-            elif choice == '9':
-                update_amenity()
-            elif choice == '10':
-                delete_amenity()
-            elif choice == '11':
-                assign_guest()
-            elif choice == '12':
-                list_rooms()
-            elif choice == '13':
-                list_amenities()
-            elif choice == '14':
-                list_guests()
-            elif choice == '15':
-                view_guests_by_room()
-            elif choice == '16':
-                view_guests_by_amenity()
-            elif choice == '17':
-                print("Exiting...")
-                sys.exit()
-            else:
-                print("Invalid option, please try again.")
+if __name__ == "__main__":
+    init_db()  
+    main_menu()   
