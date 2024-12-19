@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,14 +14,22 @@ def init_db():
     Base.metadata.create_all(engine)
     print("Database Initialized")
 
+def valid_phone_number(phone_str):
+    """Validate phone number (must be 10 digits)."""
+    return phone_str.isdigit() and len(phone_str) == 10
+
 def create_room():
     name = input("Enter Room Name: ")
-    
+
+    existing_room = session.query(Room).filter(Room.name == name).first()
+    if existing_room:
+        print(f"A room with the name '{name}' already exists.")
+        return
+
     room = Room(name=name)
-    
     session.add(room)
     session.commit()
-    
+
     print(f'Room "{name}" created with ID {room.id}')
 
 def update_room():
@@ -36,7 +45,7 @@ def update_room():
     print(f"Room with ID {room_id} updated successfully.")
 
 def delete_room():
-    room_id = int(input('Enter room ID to update: '))
+    room_id = int(input('Enter room ID to delete: '))
     room = session.get(Room, room_id)
     if not room:
         print(f"Room with ID {room_id} does not exist.")
@@ -49,7 +58,11 @@ def delete_room():
 def create_guest():
     name = input("Enter guest name: ")
     email = input("Enter guest email: ")
-    phone_number = int(input("Enter guest phone number: "))
+
+    phone_number = input("Enter guest phone number: ")
+    while not valid_phone_number(phone_number):
+        print("Invalid phone number. Please enter a 10-digit number.")
+        phone_number = input("Enter guest phone number: ")
 
     room_id = int(input("Enter room ID for the guest: "))
     amenity_id = int(input("Enter amenity ID for the guest: "))
@@ -64,7 +77,7 @@ def create_guest():
 
     session.add(guest)
     session.commit()
-    
+
     print(f"Guest '{name}' created with ID {guest.id}.")
 
 def update_guest():
@@ -77,13 +90,13 @@ def update_guest():
     
     guest.name = input(f"Enter new name for Guest (current: {guest.name}): ") or guest.name
     guest.email = input(f"Enter new email for Guest (current: {guest.email}): ") or guest.email
-    guest.phone_number = int(input(f"Enter new phone number for Guest (current: {guest.phone_number}): ") or guest.phone_number)
-    
-    new_room_id = int(input(f"Enter new room ID for Guest (current: {guest.room_id}): ") or guest.room_id)
-    guest.room_id = new_room_id
+    guest.phone_number = input(f"Enter new phone number for Guest (current: {guest.phone_number}): ") or guest.phone_number
+    while not valid_phone_number(str(guest.phone_number)):
+        print("Invalid phone number. Please enter a 10-digit number.")
+        guest.phone_number = input(f"Enter new phone number for Guest (current: {guest.phone_number}): ") or guest.phone_number
 
-    new_amenity_id = int(input(f"Enter new amenity ID for Guest (current: {guest.amenity_id}): ") or guest.amenity_id)
-    guest.amenity_id = new_amenity_id
+    guest.room_id = int(input(f"Enter new room ID for Guest (current: {guest.room_id}): ") or guest.room_id)
+    guest.amenity_id = int(input(f"Enter new amenity ID for Guest (current: {guest.amenity_id}): ") or guest.amenity_id)
     
     session.commit()
     print(f"Guest with ID {guest_id} updated successfully.")
@@ -103,11 +116,15 @@ def delete_guest():
 def create_amenity():
     name = input("Enter amenity name: ")
 
-    amenity = Amenity(name=name)
+    existing_amenity = session.query(Amenity).filter(Amenity.name == name).first()
+    if existing_amenity:
+        print(f"Amenity with the name '{name}' already exists.")
+        return
 
+    amenity = Amenity(name=name)
     session.add(amenity)
     session.commit()
-    
+
     print(f"Amenity '{name}' created with ID {amenity.id}.")
 
 def update_amenity():
@@ -144,8 +161,14 @@ def assign_guest():
     room = session.get(Room, room_id)
     amenity = session.get(Amenity, amenity_id)
 
-    if not guest or not room or not amenity:
-        print("Invalid input: Guest, Room, or Amenity not found.")
+    if not guest:
+        print(f"No guest found with ID {guest_id}.")
+        return
+    if not room:
+        print(f"No room found with ID {room_id}.")
+        return
+    if not amenity:
+        print(f"No amenity found with ID {amenity_id}.")
         return
 
     guest.room_id = room_id
@@ -225,7 +248,6 @@ def view_guests_by_amenity():
     for guest in guests:
         print(f"Guest ID: {guest.id}, Name: {guest.name}, Email: {guest.email}, Phone: {guest.phone_number}")
 
-# Main menu function should be defined outside any other function
 def main_menu():
     while True:
         print("\nWelcome to Luxury Hotel Management System")
@@ -282,11 +304,13 @@ def main_menu():
         elif choice == '16':
             view_guests_by_amenity()
         elif choice == '17':
-            print("Exiting...")
-            sys.exit()
+            confirm = input("Are you sure you want to exit? (y/n): ")
+            if confirm.lower() == 'y':
+                print("Exiting...")
+                sys.exit()
         else:
             print("Invalid option, please try again.")
 
 if __name__ == "__main__":
     init_db()  
-    main_menu()   
+    main_menu()

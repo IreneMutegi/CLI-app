@@ -6,7 +6,7 @@ Base = declarative_base()
 class Room(Base):  
     __tablename__ = "rooms"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
 
     guests = relationship("Guest", back_populates="room")
 
@@ -16,7 +16,7 @@ class Room(Base):
 class Amenity(Base):  
     __tablename__ = "amenities"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
 
     guests = relationship("Guest", back_populates="amenity")  
 
